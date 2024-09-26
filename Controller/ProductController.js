@@ -3,9 +3,11 @@ const { asyncWarpper}=require('../middelware/asyncWapper');
 const { cloudinary } = require('../middelware/uploadImage'); 
 const streamifier = require('streamifier'); 
 const CategoryModel=require('../Model/CategoryModel');
+const { ErrorHandler } = require('../utils/ErrorHandler');
 exports.createProduct = asyncWarpper(async (req, res, next) => {
-    const { name, price, description, stock, category } = req.body;
-    
+    let { name, price, description, category } = req.body;
+    name=name.toString();
+    description=description.toString();
     // Ensure category exists
     const Category = await CategoryModel.findById(category);
     if (!Category) {
@@ -56,7 +58,7 @@ exports.createProduct = asyncWarpper(async (req, res, next) => {
         name,
         price,
         description,
-        stock,
+      
         category,
         images: result.secure_url, // Image URL
         imagePublicIds: result.public_id // Public ID for the image
@@ -70,7 +72,7 @@ exports.createProduct = asyncWarpper(async (req, res, next) => {
 });
 
 exports.updateProduct = asyncWarpper(async (req, res, next) => {
-    const { name, price, description, stock, category } = req.body;
+    const { name, price, description, category } = req.body;
 
     const productId = req.params.Id;
     const product = await ProductModel.findById(productId);
@@ -138,7 +140,7 @@ exports.updateProduct = asyncWarpper(async (req, res, next) => {
     product.name = name;
     product.price = price;
     product.description = description;
-    product.stock = stock;
+   
     product.category = category;
     product.images = uploadedImages; 
     product.imagePublicIds = imagePublicIds; 
@@ -158,6 +160,19 @@ exports.getAllProducts=asyncWarpper(async (req,res,next)=>{
         'success':'success',
         'data':product
     });
+})
+exports.getProduct=asyncWarpper(async (req,res,next)=>{
+    const productId=req.params.Id;
+    const product=await ProductModel.findById(productId);
+
+    if(!product)
+    {
+        return next(new ErrorHandler('Not found Product'));
+    }
+    res.status(200).json({
+        'status':'success',
+        data:product
+    })
 })
 
 exports.deleteProduct=asyncWarpper(async (req,res,next)=>{

@@ -27,6 +27,15 @@ const UserSchema=new mongoose.Schema({
     type:String
     
     },
+    resetPasswordExpires:{
+        type:Date,
+        default:undefined
+    } ,
+    resetPasswordToken:{
+        type:String,
+        default:undefined
+    } ,
+    imagePublicIds:String,
     createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 

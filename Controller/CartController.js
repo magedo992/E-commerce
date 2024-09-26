@@ -5,6 +5,8 @@ const ProductModel=require('../Model/ProductModel');
 const {asyncWarpper}=require('../middelware/asyncWapper');
 const mongoose=require('mongoose');
 const product = require('../Model/ProductModel');
+const { number } = require('joi');
+const { ErrorHandler } = require('../utils/ErrorHandler');
 
 exports.getCart=asyncWarpper(async (req,res,next)=>{
 const cart =await cartModel.findOne({user:req.user._id}).populate('items.product');
@@ -19,6 +21,8 @@ res.status(200).json(cart);
 });
 exports.addToCart=asyncWarpper(async (req,res,next)=>{
     const userId = req.user._id;
+    console.log('hello');
+    
     const { productId, quantity } = req.body;
     if (!productId || !quantity ) {
         return res.status(400).json({
@@ -52,8 +56,18 @@ const itemIndex=  Cart.items.findIndex((item)=>item.product.toString()===product
 
     if(itemIndex>=0)
     {
-       
+        console.log(typeof(quantity));
+        
+       if(typeof(quantity)!==NaN)
+       {
         Cart.items[itemIndex].quantity+=quantity;
+
+       }
+       else
+       {
+        return next(new ErrorHandler('the quantity must be a number',422));
+       }
+        
         
      
         

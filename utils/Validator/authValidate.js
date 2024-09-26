@@ -12,6 +12,10 @@ exports.signup=joi.object({
     password:joi.string().min(8).max(60).required()
 }).options({abortEarly:false});
 
+exports.resetPassword=joi.object({
+  password:joi.string().min(8).required(),
+  confirmPassword:joi.string().min(8).equal('password').required()
+})
 
 
 exports.chack = (obj, schema, next) => {

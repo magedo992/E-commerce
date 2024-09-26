@@ -18,7 +18,7 @@ const resizeImage = (options) => {
     try {
       
       const resizedImageBuffer = await sharp(req.file.buffer)
-        .resize(width, height) 
+        .resize(width, height).rotate() 
         .toFormat('jpeg') 
         .jpeg({ quality: quality }) 
         .toBuffer();

@@ -6,3 +6,7 @@ exports.validateloginSchema=(req,res,next)=>{
 exports.validateSignupSchema=(req,res,next)=>{
     authValidator.chack(req.body,authValidator.signup,next);
 }
+
+exports.validateResetPasswordSchema=(req,res,next)=>{
+    authValidator.chack(req.body,authValidator.resetPassword,next);
+}
