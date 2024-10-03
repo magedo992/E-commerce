@@ -1,15 +1,16 @@
-exports.isAllowed=(...Roles)=>
-{
-    return (req,res,next)=>
-    {
-    if(!Roles.includes(req.user.Role))
-    {
-  return res.status(401).json({
-    'message':'you not allowed to access this route'
- })
-;
-    }
-    next();
-    }
+exports.isAllowed = (...roles) => {
+  return (req, res, next) => {
+      const { Role } = req.user;
 
-}
+     
+      if (!roles.includes(Role)) {
+        console.log(Role);
+        
+          return res.status(403).json({
+              message: 'You are not allowed to access this route'
+          });
+      }
+
+      next(); 
+  };
+};

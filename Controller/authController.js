@@ -171,7 +171,7 @@ next();
 exports.forgetPassword=asyncWarpper(async (req,res,next)=>{
     const {email}=req.body;
     let User=await user.findOne({email:email});
-    console.log('a7aaaaa');
+    
     
     if(!User)
     {
@@ -189,7 +189,7 @@ exports.forgetPassword=asyncWarpper(async (req,res,next)=>{
         subject:'Password Reset',
         text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
         Please click on the following link, or paste this into your browser to complete the process:\n\n
-        http://localhost:3000/api/reset/${token}\n\n
+        http://localhost:${process.env.port}/api/reset/${token}\n\n
         If you did not request this, please ignore this email and your password will remain unchanged.\n`
     
     }
@@ -218,3 +218,65 @@ exports.reset=asyncWarpper(async (req,res,next)=>{
         res.status(200).send('Password has been reset.');
     
 });
+exports.showResetPasswordForm = (req, res, next) => {
+    const token = req.params.token;
+    // Example of how you might set error and success messages
+    const error = req.query.error || null;
+    const success = req.query.success || null;
+
+    res.render('resetPassword', { token, error, success });
+};
+exports.Profile=asyncWarpper(async (req,res,next)=>{
+    const userId=req.user._id;
+    const User=await user.findById(userId);
+
+    if(!User)
+    {
+        return res.status(404).json({
+            'status':'fail',
+            'message':'User Not found'
+        })
+
+    }
+    return res.status(200).json({
+        'status':'success',
+        'data':User
+    })
+})
+
+exports.changeRole=asyncWarpper(async (req,res,next)=>{
+    const userId=req.user._id;
+    const User=await UserModel.findById(userId);
+
+    if(!User)
+    {
+        return next(new ErrorHandler('User Not Found',404));
+}
+    if(User.Role==='admin')
+    {
+        const ChangedUserId=req.body.userId;
+        const ChangedUser=await UserModel.findById(ChangedUserId);
+        if(!ChangedUser)
+        {
+            return next(new ErrorHandler('User not Found',404))
+        }
+        if(ChangedUser.Role==='manager')
+        {
+            ChangedUser.Role='customer'
+            
+        }
+        else {
+            
+            
+             ChangedUser.Role='manager'
+        }
+        await ChangedUser.save();
+    }
+    const users=await UserModel.find();
+    res.status(200).json(
+  {      'status':'success',
+    "data":users
+  }
+    )
+
+})

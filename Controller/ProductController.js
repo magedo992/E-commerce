@@ -4,6 +4,8 @@ const { cloudinary } = require('../middelware/uploadImage');
 const streamifier = require('streamifier'); 
 const CategoryModel=require('../Model/CategoryModel');
 const { ErrorHandler } = require('../utils/ErrorHandler');
+const ApiFeture=require('../utils/apiFeture');
+
 exports.createProduct = asyncWarpper(async (req, res, next) => {
     let { name, price, description, category } = req.body;
     name=name.toString();
@@ -155,10 +157,20 @@ exports.updateProduct = asyncWarpper(async (req, res, next) => {
 });
 
 exports.getAllProducts=asyncWarpper(async (req,res,next)=>{
-    const product=await ProductModel.find({},{'__v':0,'imagePublicIds':0});
+   
+
+        const countDoc=await ProductModel.countDocuments();
+
+        const apiFeture=new ApiFeture(ProductModel.find({},{'__v':0,'imagePublicIds':0}),req.query)
+        .pagination(countDoc).sort().search("Products");
+        const products = await apiFeture.mongoQuery; 
+        
     res.status(200).json({
         'success':'success',
-        'data':product
+        'data':products,
+        results: products.length,
+        pagination: apiFeture.paginationResult
+
     });
 })
 exports.getProduct=asyncWarpper(async (req,res,next)=>{
