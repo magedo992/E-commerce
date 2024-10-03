@@ -1,4 +1,4 @@
-E-Commerce API
+##E-Commerce API
 This is an e-commerce API built using Node.js, Express.js, and Mongoose. The API supports user authentication, product and category management, order processing, and more, with features aimed at both users and admins.
 
 Features
