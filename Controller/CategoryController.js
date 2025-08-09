@@ -43,9 +43,11 @@ exports.updateCategory=asyncWarpper(async (req,res,next)=>{
     })
 });
 exports.getAllCategory=asyncWarpper(async (req,res,next)=>{
+   
+    
     const cateogries=await CategoryModel.find({},{'__v':false});
-  const apiFeture= new ApiFeture(await CategoryModel.find({},{'__v':0}),req.query).sort()
-  .search('categories').pagination(await CategoryModel.countDocuments())
+
+  
         return res.status(200).json({
             'status':'success',
             data:cateogries

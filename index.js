@@ -13,7 +13,7 @@ require('dotenv').config();
 
 const db = require('./database');
 
-db.connectToDatabase();
+db.connectToDatabase()
 
 
 app.use(express.json({ limit: '100kb' }));
