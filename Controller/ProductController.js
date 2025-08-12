@@ -4,7 +4,7 @@ const { cloudinary } = require('../middelware/uploadImage');
 const streamifier = require('streamifier'); 
 const CategoryModel=require('../Model/CategoryModel');
 const { ErrorHandler } = require('../utils/ErrorHandler');
-const ApiFeture=require('../utils/apiFeture');
+
 
 exports.createProduct = asyncWarpper(async (req, res, next) => {
     let { name, price, description, category } = req.body;
@@ -156,23 +156,20 @@ exports.updateProduct = asyncWarpper(async (req, res, next) => {
     });
 });
 
-exports.getAllProducts=asyncWarpper(async (req,res,next)=>{
-   
+exports.getAllProducts = asyncWarpper(async (req, res, next) => {
+    const products = await ProductModel.find({}, { "__v": false })
+        .populate({
+            path: 'category',
+            select: 'name' // يرجع بس اسم الكاتيجوري
+        });
 
-        const countDoc=await ProductModel.countDocuments();
-
-        const apiFeture=new ApiFeture(ProductModel.find({},{'__v':0,'imagePublicIds':0}),req.query)
-        .pagination(countDoc).sort().search("Products");
-        const products = await apiFeture.mongoQuery; 
-        
     res.status(200).json({
-        'success':'success',
-        'data':products,
+        success: true,
         results: products.length,
-        pagination: apiFeture.paginationResult
-
+        data: products
     });
-})
+});
+
 exports.getProduct=asyncWarpper(async (req,res,next)=>{
     const productId=req.params.Id;
     const product=await ProductModel.findById(productId);
